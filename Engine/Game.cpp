@@ -20,11 +20,14 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include  "SpriteCodex.h"
+
 
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	field(20)
 {
 }
 
@@ -35,11 +38,29 @@ void Game::Go()
 	ComposeFrame();
 	gfx.EndFrame();
 }
-
 void Game::UpdateModel()
 {
+	//TestTiles();
+}
+void Game::TestTiles()
+{
+	SpriteCodex::DrawTile0(Vei2(100, 100), gfx);
+	SpriteCodex::DrawTile1(Vei2(150, 100), gfx);
+	SpriteCodex::DrawTile2(Vei2(200, 100), gfx);
+	SpriteCodex::DrawTile3(Vei2(250, 100), gfx);
+	SpriteCodex::DrawTile4(Vei2(300, 100), gfx);
+	SpriteCodex::DrawTile5(Vei2(350, 100), gfx);
+	SpriteCodex::DrawTile6(Vei2(400, 100), gfx);
+	SpriteCodex::DrawTile7(Vei2(450, 100), gfx);
+	SpriteCodex::DrawTile8(Vei2(500, 100), gfx);
+	SpriteCodex::DrawTileButton(Vei2(100, 150), gfx);
+	SpriteCodex::DrawTileCross(Vei2(150, 150), gfx);
+	SpriteCodex::DrawTileFlag(Vei2(200, 150), gfx);
+	SpriteCodex::DrawTileBomb(Vei2(250, 150), gfx);
+	SpriteCodex::DrawTileBombRed(Vei2(300, 150), gfx);
 }
 
 void Game::ComposeFrame()
 {
+	field.Draw(gfx);
 }
