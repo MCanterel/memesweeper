@@ -7,7 +7,6 @@ class MemeField
 {
 private:
 
-
 	class Tile {
 	public:
 		enum class State {
@@ -18,14 +17,11 @@ private:
 	public:
 		void SpawnMeme();
 		bool HasMeme() const;
-		void Draw(const Vei2& screenPos, Graphics gfx);
+		void Draw(const Vei2& screenPos, Graphics& gfx);
 	private:
 		State state = State::Hidden;
 		bool hasMeme = false;
 	};
-
-
-
 
 public:
 	MemeField(int nMemes);

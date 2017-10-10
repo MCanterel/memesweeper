@@ -57,7 +57,7 @@ bool MemeField::Tile::HasMeme() const
 	return hasMeme;
 }
 
-void MemeField::Tile::Draw(const Vei2& screenPos, Graphics gfx)
+void MemeField::Tile::Draw(const Vei2& screenPos, Graphics& gfx)
 {
 	switch (state)
 	{
