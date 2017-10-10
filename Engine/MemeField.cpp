@@ -26,14 +26,20 @@ MemeField::MemeField(int nMemes)
 
 void MemeField::Draw(Graphics & gfx) const
 {
+	gfx.DrawRect(GetRect(), SpriteCodex::baseColor);
 	for (Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++) {
-		for ( ; gridPos.x < width; gridPos.x++) {  //note we don't have to start w initial val here, as gridPos.x will always be given in outer loop
-			//Vei2 sPos = Vei2(gridPos.x * SpriteCodex::tileSize, gridPos.y * SpriteCodex::tileSize);
-
-			//TileAt(gridPos).Draw(gridPos * SpriteCodex::tileSize, gfx);
-			TileAt(gridPos).Draw(gridPos * SpriteCodex::tileSize, gfx);
+		//for ( ; gridPos.x < width; gridPos.x++) {  //note we don't have to start w initial val here, as gridPos.x will always be given in outer loop
+		//fucking hell, I don't get this one! we had to change this loop and add gridPos.x = 0;
+		// oh wait, it's cuz gridPos.x took the last value of the first loop through y, which was 20 (I think)
+		for	(gridPos.x = 0; gridPos.x < width; gridPos.x++) {
+			TileAt(gridPos).Draw(gridPos * SpriteCodex::tileSize, gfx);  //look into this. Tile Draw function sig wasn't const
 		}
 	}
+}
+
+RectI MemeField::GetRect() const
+{
+	return RectI(0, width * SpriteCodex::tileSize, 0, height * SpriteCodex::tileSize);
 }
 
 MemeField::Tile& MemeField::TileAt(const Vei2 & gridPos)
@@ -57,7 +63,7 @@ bool MemeField::Tile::HasMeme() const
 	return hasMeme;
 }
 
-void MemeField::Tile::Draw(const Vei2& screenPos, Graphics& gfx)
+void MemeField::Tile::Draw(const Vei2& screenPos, Graphics& gfx) const
 {
 	switch (state)
 	{
