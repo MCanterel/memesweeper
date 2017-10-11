@@ -1,5 +1,5 @@
-/****************************************************************************************** 
- *	Chili DirectX Framework Version 16.07.20											  *	
+/******************************************************************************************
+ *	Chili DirectX Framework Version 16.07.20											  *
  *	Game.cpp																			  *
  *	Copyright 2016 PlanetChili.net <http://www.planetchili.net>							  *
  *																						  *
@@ -23,17 +23,17 @@
 #include  "SpriteCodex.h"
 
 
-Game::Game( MainWindow& wnd )
+Game::Game(MainWindow& wnd)
 	:
-	wnd( wnd ),
-	gfx( wnd ),
+	wnd(wnd),
+	gfx(wnd),
 	field(20)
 {
 }
 
 void Game::Go()
 {
-	gfx.BeginFrame();	
+	gfx.BeginFrame();
 	UpdateModel();
 	ComposeFrame();
 	gfx.EndFrame();
@@ -41,8 +41,28 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	//TestTiles();
-	if (wnd.mouse.LeftIsPressed()) {
-		field.OnRevealClick(wnd.mouse.GetPos());
+
+	/*if (wnd.mouse.LeftIsPressed()) {
+		const Vei2 mousePos = wnd.mouse.GetPos();
+		if (field.GetRect().Contains(mousePos))	field.OnRevealClick(mousePos);
+	}
+	else if (wnd.mouse.RightIsPressed()) {
+		const Vei2 mousePos = wnd.mouse.GetPos();
+		if (field.GetRect().Contains(mousePos))	field.OnFlagClick(mousePos);
+	}*/
+	//  old way to do it that doesn't capture the mouseclicks'
+
+	while (!wnd.mouse.IsEmpty()) {
+		const Mouse::Event e = wnd.mouse.Read();
+		const Vei2 mousePos = wnd.mouse.GetPos();
+		if (e.GetType() == Mouse::Event::Type::LPress)
+		{
+			if (field.GetRect().Contains(mousePos))	field.OnRevealClick(mousePos);
+		}
+		if (e.GetType() == Mouse::Event::Type::RPress)
+		{
+			if (field.GetRect().Contains(mousePos))	field.OnFlagClick(mousePos);
+		}
 	}
 }
 void Game::TestTiles()
