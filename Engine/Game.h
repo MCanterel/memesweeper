@@ -42,6 +42,7 @@ private:
 private:
 	MainWindow& wnd;
 	Graphics gfx;
+	//Mouse mouse;
 	/********************************/
 	/*  User Variables              */
 	/********************************/

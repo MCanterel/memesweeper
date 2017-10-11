@@ -17,11 +17,17 @@ MemeField::MemeField(int nMemes)
 		Vei2 spawnPos;
 		do {
 			spawnPos = { xDist(rng), yDist(rng) };
-		} while
-			(TileAt(spawnPos).HasMeme());
+		} 
+		while	(TileAt(spawnPos).HasMeme());
+
 		TileAt(spawnPos).SpawnMeme();
 	}
 
+	//reveal test
+	for (int i = 0; i < 20; i++) {
+		const Vei2 gridPos = { xDist(rng), yDist(rng) };
+		if (!TileAt(gridPos).IsRevealed()) TileAt(gridPos).Reveal();  //don't I need to explicitly initialize the Vei2 that TileAt is calling?
+	}
 }
 
 void MemeField::Draw(Graphics & gfx) const
@@ -31,7 +37,7 @@ void MemeField::Draw(Graphics & gfx) const
 		//for ( ; gridPos.x < width; gridPos.x++) {  //note we don't have to start w initial val here, as gridPos.x will always be given in outer loop
 		//fucking hell, I don't get this one! we had to change this loop and add gridPos.x = 0;
 		// oh wait, it's cuz gridPos.x took the last value of the first loop through y, which was 20 (I think)
-		for	(gridPos.x = 0; gridPos.x < width; gridPos.x++) {
+		for (gridPos.x = 0; gridPos.x < width; gridPos.x++) {
 			TileAt(gridPos).Draw(gridPos * SpriteCodex::tileSize, gfx);  //look into this. Tile Draw function sig wasn't const
 		}
 	}
@@ -42,6 +48,14 @@ RectI MemeField::GetRect() const
 	return RectI(0, width * SpriteCodex::tileSize, 0, height * SpriteCodex::tileSize);
 }
 
+void MemeField::OnRevealClick(const Vei2 & screenPos)
+{
+	const Vei2 gridPos = ScreenToGrid(screenPos);
+	assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
+	Tile& tile = TileAt(gridPos);
+	if (!tile.IsRevealed()) tile.Reveal();
+}
+
 MemeField::Tile& MemeField::TileAt(const Vei2 & gridPos)
 {
 	return field[gridPos.y * width + gridPos.x];
@@ -50,6 +64,13 @@ MemeField::Tile& MemeField::TileAt(const Vei2 & gridPos)
 const MemeField::Tile& MemeField::TileAt(const Vei2 & gridPos) const
 {
 	return field[gridPos.y * width + gridPos.x];
+}
+
+Vei2 MemeField::ScreenToGrid(const Vei2 screenPos)
+{
+	return screenPos / SpriteCodex::tileSize;
+	//return Vei2({ screenPos.x / SpriteCodex::tileSize, screenPos.y / SpriteCodex::tileSize });
+	//this was what i'd have had to do before the Vei2 divide method
 }
 
 void MemeField::Tile::SpawnMeme()
@@ -79,8 +100,19 @@ void MemeField::Tile::Draw(const Vei2& screenPos, Graphics& gfx) const
 			SpriteCodex::DrawTile0(screenPos, gfx);
 		}
 		else {
-	SpriteCodex::DrawTileBomb(screenPos, gfx);
+			SpriteCodex::DrawTileBomb(screenPos, gfx);
 		}
 		break;
 	}
+}
+
+void MemeField::Tile::Reveal()
+{
+	assert(state == State::Hidden);
+	state = State::Revealed;
+}
+
+bool MemeField::Tile::IsRevealed() const
+{
+	return (state == State::Revealed);
 }

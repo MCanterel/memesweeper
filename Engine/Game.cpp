@@ -41,6 +41,9 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	//TestTiles();
+	if (wnd.mouse.LeftIsPressed()) {
+		field.OnRevealClick(wnd.mouse.GetPos());
+	}
 }
 void Game::TestTiles()
 {
