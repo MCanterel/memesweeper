@@ -21,9 +21,11 @@ private:
 		bool IsRevealed() const;
 		void ToggleFlag();
 		bool IsFlagged() const;
+		void SetNeighborMemeCount(int memeCount);
 	private:
 		State state = State::Hidden;
 		bool hasMeme = false;
+		int nNeighborMemes = -1;
 	};
 	// end of Tile member class
 
@@ -34,6 +36,8 @@ public:
 	RectI GetRect() const;
 	void OnRevealClick(const Vei2& screenPos);
 	void OnFlagClick(const Vei2& screenPos);
+	int CountNeighborMemes(const Vei2& gridPos);  //const?
+	
 private:
 	Tile& TileAt(const Vei2& gridPos);
 	const Tile& TileAt(const Vei2& gridPos) const;
@@ -42,5 +46,6 @@ private:
 	static constexpr int width = 20;
 	static constexpr int height = 16;
 	Tile field[width * height];
+	
 	};
 

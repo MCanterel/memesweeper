@@ -17,17 +17,22 @@ MemeField::MemeField(int nMemes)
 		Vei2 spawnPos;
 		do {
 			spawnPos = { xDist(rng), yDist(rng) };
-		} 
-		while	(TileAt(spawnPos).HasMeme());
+		} while (TileAt(spawnPos).HasMeme());
 
 		TileAt(spawnPos).SpawnMeme();
 	}
+	for (Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++) {
+		for (gridPos.x = 0; gridPos.x < width; gridPos.x++) {
+			TileAt(gridPos).SetNeighborMemeCount(CountNeighborMemes(gridPos));
+		}
+	}
+
 
 	//reveal test
-	for (int i = 0; i < 20; i++) {
-		const Vei2 gridPos = { xDist(rng), yDist(rng) };
-		if (!TileAt(gridPos).IsRevealed()) TileAt(gridPos).Reveal();  //don't I need to explicitly initialize the Vei2 that TileAt is calling?
-	}
+	//for (int i = 0; i < 20; i++) {
+	//	const Vei2 gridPos = { xDist(rng), yDist(rng) };
+	//	if (!TileAt(gridPos).IsRevealed()) TileAt(gridPos).Reveal();  //don't I need to explicitly initialize the Vei2 that TileAt is calling?
+	//}
 }
 
 void MemeField::Draw(Graphics & gfx) const
@@ -62,6 +67,29 @@ void MemeField::OnFlagClick(const Vei2 & screenPos)
 	assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
 	Tile& tile = TileAt(gridPos);
 	if (!tile.IsRevealed()) tile.ToggleFlag();
+}
+
+int MemeField::CountNeighborMemes(const Vei2 & gridPos)
+
+{
+	const int xStart = std::max(0, gridPos.x - 1);
+	const int yStart = std::max(0, gridPos.y - 1);
+	const int xEnd = std::min(width, gridPos.x + 1);
+	const int yEnd = std::min(height, gridPos.y + 1);
+
+	int nCount = 0;
+
+	/*for (int y = yStart; y <= yEnd; y++) {
+		for (int x = xStart; x <= xEnd; x++) {
+			if (TileAt(gridPos))
+		}*/  //old way that doesn't initialize a Vei2 that we need at the end to use HasMeme()
+
+	for (Vei2 gPos = { xStart,yStart }; gPos.y <= yEnd; gPos.y++) {
+		for (gPos.x = xStart; gPos.x <= xEnd; gPos.x++) {
+			if (TileAt(gPos).HasMeme()) nCount++;
+		}
+	}
+	return nCount;
 }
 
 MemeField::Tile& MemeField::TileAt(const Vei2 & gridPos)
@@ -105,7 +133,7 @@ void MemeField::Tile::Draw(const Vei2& screenPos, Graphics& gfx) const
 		break;
 	case State::Revealed:
 		if (!HasMeme()) {
-			SpriteCodex::DrawTile0(screenPos, gfx);
+			SpriteCodex::DrawTileNumber(screenPos, nNeighborMemes,gfx);
 		}
 		else {
 			SpriteCodex::DrawTileBomb(screenPos, gfx);
@@ -135,4 +163,10 @@ void MemeField::Tile::ToggleFlag()
 bool MemeField::Tile::IsFlagged() const
 {
 	return state == State::Flagged;
+}
+
+void MemeField::Tile::SetNeighborMemeCount(int memeCount)
+{
+	assert(nNeighborMemes == -1);
+	nNeighborMemes = memeCount;
 }
