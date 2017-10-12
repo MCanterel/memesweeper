@@ -21,6 +21,7 @@ MemeField::MemeField(int nMemes)
 
 		TileAt(spawnPos).SpawnMeme();
 	}
+
 	for (Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++) {
 		for (gridPos.x = 0; gridPos.x < width; gridPos.x++) {
 			TileAt(gridPos).SetNeighborMemeCount(CountNeighborMemes(gridPos));
@@ -43,30 +44,41 @@ void MemeField::Draw(Graphics & gfx) const
 		//fucking hell, I don't get this one! we had to change this loop and add gridPos.x = 0;
 		// oh wait, it's cuz gridPos.x took the last value of the first loop through y, which was 20 (I think)
 		for (gridPos.x = 0; gridPos.x < width; gridPos.x++) {
-			TileAt(gridPos).Draw(gridPos * SpriteCodex::tileSize, gfx);  //look into this. Tile Draw function sig wasn't const
+			TileAt(gridPos).Draw(topLeft + (gridPos * SpriteCodex::tileSize), isKvorked, gfx);  //look into this. Tile Draw function sig wasn't const
 		}
 	}
 }
 
 RectI MemeField::GetRect() const
 {
-	return RectI(0, width * SpriteCodex::tileSize, 0, height * SpriteCodex::tileSize);
+	return (RectI(topLeft, width * SpriteCodex::tileSize, height * SpriteCodex::tileSize));
+	//return RectI(0, width * SpriteCodex::tileSize, 0, height * SpriteCodex::tileSize);
 }
 
 void MemeField::OnRevealClick(const Vei2 & screenPos)
 {
-	const Vei2 gridPos = ScreenToGrid(screenPos);
-	assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
-	Tile& tile = TileAt(gridPos);
-	if (!tile.IsRevealed() && !tile.IsFlagged()) tile.Reveal();
+
+	if (!isKvorked) {
+		const Vei2 gridPos = ScreenToGrid(screenPos);  
+		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
+		Tile& tile = TileAt(gridPos);
+		if (!tile.IsRevealed() && !tile.IsFlagged()) tile.Reveal();
+		if (tile.HasMeme()) {
+			isKvorked = true;
+		}
+	}
 }
 
 void MemeField::OnFlagClick(const Vei2 & screenPos)
 {
-	const Vei2 gridPos = ScreenToGrid(screenPos);
-	assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
-	Tile& tile = TileAt(gridPos);
-	if (!tile.IsRevealed()) tile.ToggleFlag();
+	if (!isKvorked) {
+
+
+		const Vei2 gridPos = ScreenToGrid(screenPos);
+		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
+		Tile& tile = TileAt(gridPos);
+		if (!tile.IsRevealed()) tile.ToggleFlag();
+	}
 }
 
 int MemeField::CountNeighborMemes(const Vei2 & gridPos)
@@ -74,8 +86,8 @@ int MemeField::CountNeighborMemes(const Vei2 & gridPos)
 {
 	const int xStart = std::max(0, gridPos.x - 1);
 	const int yStart = std::max(0, gridPos.y - 1);
-	const int xEnd = std::min(width, gridPos.x + 1);
-	const int yEnd = std::min(height, gridPos.y + 1);
+	const int xEnd = std::min(width - 1, gridPos.x + 1);
+	const int yEnd = std::min(height - 1, gridPos.y + 1);
 
 	int nCount = 0;
 
@@ -104,9 +116,13 @@ const MemeField::Tile& MemeField::TileAt(const Vei2 & gridPos) const
 
 Vei2 MemeField::ScreenToGrid(const Vei2 screenPos)
 {
-	return screenPos / SpriteCodex::tileSize;
-	//return Vei2({ screenPos.x / SpriteCodex::tileSize, screenPos.y / SpriteCodex::tileSize });
-	//this was what i'd have had to do before the Vei2 divide method
+	return (screenPos - topLeft)/ SpriteCodex::tileSize;  //WHOAH this was hard to get the translation of mouse pos to screen/grid space:  screenPos - topLeft
+	
+}
+
+const Vei2 MemeField::GetTopLeft() const
+{
+	return topLeft;
 }
 
 void MemeField::Tile::SpawnMeme()
@@ -120,25 +136,59 @@ bool MemeField::Tile::HasMeme() const
 	return hasMeme;
 }
 
-void MemeField::Tile::Draw(const Vei2& screenPos, Graphics& gfx) const
+void MemeField::Tile::Draw(const Vei2& screenPos, bool isKvorked, Graphics& gfx) const
 {
-	switch (state)
-	{
-	case State::Hidden:
-		SpriteCodex::DrawTileButton(screenPos, gfx);
-		break;
-	case State::Flagged:
-		SpriteCodex::DrawTileButton(screenPos, gfx);
-		SpriteCodex::DrawTileFlag(screenPos, gfx);
-		break;
-	case State::Revealed:
-		if (!HasMeme()) {
-			SpriteCodex::DrawTileNumber(screenPos, nNeighborMemes,gfx);
+	if (!isKvorked) {
+		switch (state)
+		{
+		case State::Hidden:
+			SpriteCodex::DrawTileButton(screenPos, gfx);
+			break;
+		case State::Flagged:
+			SpriteCodex::DrawTileButton(screenPos, gfx);
+			SpriteCodex::DrawTileFlag(screenPos, gfx);
+			break;
+		case State::Revealed:
+			if (!HasMeme()) {
+				SpriteCodex::DrawTileNumber(screenPos, nNeighborMemes, gfx);
+			}
+			else {
+				SpriteCodex::DrawTileBomb(screenPos, gfx);
+			}
+			break;
 		}
-		else {
-			SpriteCodex::DrawTileBomb(screenPos, gfx);
+	}
+	else {
+		switch (state)
+		{
+		case State::Hidden:
+			if (HasMeme()) {
+				SpriteCodex::DrawTileBomb(screenPos, gfx);
+			}
+			else {
+				SpriteCodex::DrawTileButton(screenPos, gfx);
+			}
+			break;
+		case State::Flagged:
+			if (HasMeme()) {
+				SpriteCodex::DrawTileBomb(screenPos, gfx);
+				SpriteCodex::DrawTileFlag(screenPos, gfx);
+			}
+			else {
+				SpriteCodex::DrawTileBomb(screenPos, gfx);
+				SpriteCodex::DrawTileCross(screenPos, gfx);
+			}			
+			break;
+		case State::Revealed:
+			if (!HasMeme()) {
+				SpriteCodex::DrawTileNumber(screenPos, nNeighborMemes, gfx);
+			}
+			else {
+				SpriteCodex::DrawTileBombRed(screenPos, gfx);
+			}
+			break;
 		}
-		break;
+
 	}
 }
 

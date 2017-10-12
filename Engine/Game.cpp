@@ -54,7 +54,9 @@ void Game::UpdateModel()
 
 	while (!wnd.mouse.IsEmpty()) {
 		const Mouse::Event e = wnd.mouse.Read();
-		const Vei2 mousePos = wnd.mouse.GetPos();
+
+		Vei2 mousePos = wnd.mouse.GetPos(); // -field.GetTopLeft();  //not necessary, as this is handled in memefield::screentogrid
+
 		if (e.GetType() == Mouse::Event::Type::LPress)
 		{
 			if (field.GetRect().Contains(mousePos))	field.OnRevealClick(mousePos);
