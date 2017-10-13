@@ -27,7 +27,9 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
-	field(nMemes)
+	field(nMemes),
+	soundPad(L"Sounds\\pad.wav"),
+	soundFart(L"Sounds\\fart.wav")
 {
 }
 
@@ -68,13 +70,19 @@ void Game::UpdateModel()
 
 			if (e.GetType() == Mouse::Event::Type::LPress)
 			{
+				
 				if (field.GetRect().Contains(mousePos))	
 					if (field.OnRevealClick(mousePos)) {
+						soundFart.Play(0.75f, 0.75f);
 						gameState = GameState::Lost;
+					}
+					else {
+						soundPad.Play(0.75f, 0.2f);
 					}
 			}
 			if (e.GetType() == Mouse::Event::Type::RPress)
 			{
+				soundPad.Play(0.5f, 0.1f);
 				if (field.GetRect().Contains(mousePos))	
 					field.OnFlagClick(mousePos);
 			}

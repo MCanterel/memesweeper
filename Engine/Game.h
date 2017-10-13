@@ -24,6 +24,7 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "MemeField.h"
+#include "Sound.h"
 
 class Game
 {
@@ -56,4 +57,6 @@ private:
 	MemeField field;
 	GameState gameState = GameState::Waiting;
 	static constexpr int nMemes = 13;
+	Sound soundPad;
+	Sound soundFart;
 };
