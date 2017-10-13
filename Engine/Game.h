@@ -55,5 +55,5 @@ private:
 	/********************************/
 	MemeField field;
 	GameState gameState = GameState::Waiting;
-	static constexpr int nMemes = 1;
+	static constexpr int nMemes = 13;
 };

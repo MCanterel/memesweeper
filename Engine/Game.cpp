@@ -110,10 +110,10 @@ void Game::ComposeFrame()
 	field.Draw(gfx);
 	switch (gameState) {
 	case GameState::Won:
-		SpriteCodex::DrawWinScreen(Vei2(gfx.ScreenWidth / 2 - 100, 350), gfx);
+		SpriteCodex::DrawWinScreen(Vei2(gfx.ScreenWidth / 2 - 100, 370), gfx);
 		break;
 	case GameState::Lost:
-		SpriteCodex::DrawLoseScreen(Vei2(gfx.ScreenWidth / 2 - 100, 350), gfx);
+		SpriteCodex::DrawLoseScreen(Vei2(gfx.ScreenWidth / 2 - 140, 370), gfx);
 	}
 	
 }

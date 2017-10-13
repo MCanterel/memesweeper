@@ -47,8 +47,8 @@ private:
 	Vei2 ScreenToGrid(const Vei2 screenPos);
 	
 private:
-	static constexpr int width = 4;
-	static constexpr int height = 3;
+	static constexpr int width = 12;
+	static constexpr int height = 8;
 	Tile field[width * height];
 	//static constexpr int topLeftX = (Graphics::ScreenWidth - (width * SpriteCodex::tileSize)) / 2;
 	//static constexpr int topLeftY = (Graphics::ScreenHeight - (height * SpriteCodex::tileSize)) / 2;
