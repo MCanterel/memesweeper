@@ -28,6 +28,13 @@
 class Game
 {
 public:
+	enum class GameState {
+		Waiting,
+		Playing,
+		Won,
+		Lost
+	};
+public:
 	Game( class MainWindow& wnd );
 	Game( const Game& ) = delete;
 	Game& operator=( const Game& ) = delete;
@@ -38,7 +45,7 @@ private:
 	/********************************/
 	/*  User Functions              */
 	/********************************/
-	void TestTiles();
+	//void TestTiles();
 private:
 	MainWindow& wnd;
 	Graphics gfx;
@@ -47,4 +54,6 @@ private:
 	/*  User Variables              */
 	/********************************/
 	MemeField field;
+	GameState gameState = GameState::Waiting;
+	static constexpr int nMemes = 1;
 };

@@ -30,15 +30,16 @@ private:
 	};
 	// end of Tile member class
 
-
 public:
 	MemeField(int nMemes);
 	void Draw(Graphics& gfx) const;
 	RectI GetRect() const;
-	void OnRevealClick(const Vei2& screenPos);
+	bool OnRevealClick(const Vei2& screenPos);
 	void OnFlagClick(const Vei2& screenPos);
 	int CountNeighborMemes(const Vei2& gridPos);  //const?
 	const Vei2 GetTopLeft() const;
+	int GetCountTotalTiles();
+	bool AllTilesAreRevealed();
 	
 private:
 	Tile& TileAt(const Vei2& gridPos);
@@ -46,13 +47,13 @@ private:
 	Vei2 ScreenToGrid(const Vei2 screenPos);
 	
 private:
-	static constexpr int width = 20;
-	static constexpr int height = 15;
+	static constexpr int width = 4;
+	static constexpr int height = 3;
 	Tile field[width * height];
 	//static constexpr int topLeftX = (Graphics::ScreenWidth - (width * SpriteCodex::tileSize)) / 2;
 	//static constexpr int topLeftY = (Graphics::ScreenHeight - (height * SpriteCodex::tileSize)) / 2;
 	const Vei2 topLeft = Vei2 { (Graphics::ScreenWidth - (width * SpriteCodex::tileSize)) / 2 ,  (Graphics::ScreenHeight - (height * SpriteCodex::tileSize)) / 2 };
 	bool isKvorked = false;
-	
+	bool isMuyMacho = false;
 	};
 

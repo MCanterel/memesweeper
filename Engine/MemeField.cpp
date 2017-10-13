@@ -4,6 +4,7 @@
 #include "SpriteCodex.h"
 
 
+
 MemeField::MemeField(int nMemes)
 {
 	assert(nMemes > 0 && nMemes < width * height);
@@ -27,7 +28,6 @@ MemeField::MemeField(int nMemes)
 			TileAt(gridPos).SetNeighborMemeCount(CountNeighborMemes(gridPos));
 		}
 	}
-
 
 	//reveal test
 	//for (int i = 0; i < 20; i++) {
@@ -55,24 +55,23 @@ RectI MemeField::GetRect() const
 	//return RectI(0, width * SpriteCodex::tileSize, 0, height * SpriteCodex::tileSize);
 }
 
-void MemeField::OnRevealClick(const Vei2 & screenPos)
+bool MemeField::OnRevealClick(const Vei2 & screenPos)
 {
-
 	if (!isKvorked) {
-		const Vei2 gridPos = ScreenToGrid(screenPos);  
+		const Vei2 gridPos = ScreenToGrid(screenPos);
 		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
 		Tile& tile = TileAt(gridPos);
 		if (!tile.IsRevealed() && !tile.IsFlagged()) tile.Reveal();
 		if (tile.HasMeme()) {
 			isKvorked = true;
 		}
+		return isKvorked;
 	}
 }
 
 void MemeField::OnFlagClick(const Vei2 & screenPos)
 {
 	if (!isKvorked) {
-
 
 		const Vei2 gridPos = ScreenToGrid(screenPos);
 		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
@@ -116,13 +115,38 @@ const MemeField::Tile& MemeField::TileAt(const Vei2 & gridPos) const
 
 Vei2 MemeField::ScreenToGrid(const Vei2 screenPos)
 {
-	return (screenPos - topLeft)/ SpriteCodex::tileSize;  //WHOAH this was hard to get the translation of mouse pos to screen/grid space:  screenPos - topLeft
-	
+	return (screenPos - topLeft) / SpriteCodex::tileSize;  //WHOAH this was hard to get the translation of mouse pos to screen/grid space:  screenPos - topLeft
+
 }
 
 const Vei2 MemeField::GetTopLeft() const
 {
 	return topLeft;
+}
+
+int MemeField::GetCountTotalTiles()
+{
+	return width * height;
+}
+
+bool MemeField::AllTilesAreRevealed()
+{
+	// omg this test needs to return true ONLY if all of the tiles are either revealed or flagged!
+	// I finally got it, but not easy. Had to first test for revealed. If not revealed, then check
+	// if flagged. Dependent. Can't check for both at the same time, right?
+
+	bool test = true;
+	for (Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++) {
+		for (gridPos.x = 0; gridPos.x < width; gridPos.x++) {
+			if (!(TileAt(gridPos).IsRevealed()))
+			{
+				if (!(TileAt(gridPos).IsFlagged())) {
+					test = false;
+				}
+			}
+		}
+	}
+	return test;
 }
 
 void MemeField::Tile::SpawnMeme()
@@ -177,7 +201,7 @@ void MemeField::Tile::Draw(const Vei2& screenPos, bool isKvorked, Graphics& gfx)
 			else {
 				SpriteCodex::DrawTileBomb(screenPos, gfx);
 				SpriteCodex::DrawTileCross(screenPos, gfx);
-			}			
+			}
 			break;
 		case State::Revealed:
 			if (!HasMeme()) {
@@ -220,3 +244,5 @@ void MemeField::Tile::SetNeighborMemeCount(int memeCount)
 	assert(nNeighborMemes == -1);
 	nNeighborMemes = memeCount;
 }
+
+

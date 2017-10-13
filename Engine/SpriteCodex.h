@@ -28,5 +28,7 @@ public:
 	static void DrawTileBombRed( const Vei2& pos,Graphics& gfx );
 
 	static void DrawTile7White(const Vei2& pos, Graphics& gfx);
-
+	static void DrawWaitScreen(const Vei2& pos, Graphics& gfx);
+	static void DrawWinScreen(const Vei2& pos, Graphics& gfx);
+	static void DrawLoseScreen(const Vei2& pos, Graphics& gfx);
 };

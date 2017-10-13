@@ -27,7 +27,7 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
-	field(30)
+	field(nMemes)
 {
 }
 
@@ -41,7 +41,6 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	//TestTiles();
-
 	/*if (wnd.mouse.LeftIsPressed()) {
 		const Vei2 mousePos = wnd.mouse.GetPos();
 		if (field.GetRect().Contains(mousePos))	field.OnRevealClick(mousePos);
@@ -49,43 +48,72 @@ void Game::UpdateModel()
 	else if (wnd.mouse.RightIsPressed()) {
 		const Vei2 mousePos = wnd.mouse.GetPos();
 		if (field.GetRect().Contains(mousePos))	field.OnFlagClick(mousePos);
-	}*/
+	}
+
+	*/
 	//  old way to do it that doesn't capture the mouseclicks'
 
-	while (!wnd.mouse.IsEmpty()) {
-		const Mouse::Event e = wnd.mouse.Read();
+	switch (gameState) {
+	case GameState::Waiting:
+		SpriteCodex::DrawWaitScreen(Vei2(gfx.ScreenWidth / 2 - 100, 10), gfx);
+		//SpriteCodex::DrawWaitScreen(Vei2(gfx.ScreenWidth / 2, gfx.ScreenHeight / 2), gfx);
+		if (wnd.kbd.KeyIsPressed(VK_RETURN)) gameState = GameState::Playing;
+		break;
+	case GameState::Playing:
+		while (!wnd.mouse.IsEmpty()) {
+			const Mouse::Event e = wnd.mouse.Read();
+			Vei2 mousePos = wnd.mouse.GetPos();
+			// -field.GetTopLeft();  //not necessary, as this is handled in memefield::screentogrid
+			//GetPos() is just passed the raw mousePos
 
-		Vei2 mousePos = wnd.mouse.GetPos(); // -field.GetTopLeft();  //not necessary, as this is handled in memefield::screentogrid
+			if (e.GetType() == Mouse::Event::Type::LPress)
+			{
+				if (field.GetRect().Contains(mousePos))	
+					if (field.OnRevealClick(mousePos)) {
+						gameState = GameState::Lost;
+					}
+			}
+			if (e.GetType() == Mouse::Event::Type::RPress)
+			{
+				if (field.GetRect().Contains(mousePos))	
+					field.OnFlagClick(mousePos);
+			}
+		}
 
-		if (e.GetType() == Mouse::Event::Type::LPress)
-		{
-			if (field.GetRect().Contains(mousePos))	field.OnRevealClick(mousePos);
-		}
-		if (e.GetType() == Mouse::Event::Type::RPress)
-		{
-			if (field.GetRect().Contains(mousePos))	field.OnFlagClick(mousePos);
-		}
+		if (field.AllTilesAreRevealed()) 
+			gameState = GameState::Won;
+		break;
 	}
+
+
 }
-void Game::TestTiles()
-{
-	SpriteCodex::DrawTile0(Vei2(100, 100), gfx);
-	SpriteCodex::DrawTile1(Vei2(150, 100), gfx);
-	SpriteCodex::DrawTile2(Vei2(200, 100), gfx);
-	SpriteCodex::DrawTile3(Vei2(250, 100), gfx);
-	SpriteCodex::DrawTile4(Vei2(300, 100), gfx);
-	SpriteCodex::DrawTile5(Vei2(350, 100), gfx);
-	SpriteCodex::DrawTile6(Vei2(400, 100), gfx);
-	SpriteCodex::DrawTile7(Vei2(450, 100), gfx);
-	SpriteCodex::DrawTile8(Vei2(500, 100), gfx);
-	SpriteCodex::DrawTileButton(Vei2(100, 150), gfx);
-	SpriteCodex::DrawTileCross(Vei2(150, 150), gfx);
-	SpriteCodex::DrawTileFlag(Vei2(200, 150), gfx);
-	SpriteCodex::DrawTileBomb(Vei2(250, 150), gfx);
-	SpriteCodex::DrawTileBombRed(Vei2(300, 150), gfx);
-}
+//void Game::TestTiles()
+//{
+//	SpriteCodex::DrawTile0(Vei2(100, 100), gfx);
+//	SpriteCodex::DrawTile1(Vei2(150, 100), gfx);
+//	SpriteCodex::DrawTile2(Vei2(200, 100), gfx);
+//	SpriteCodex::DrawTile3(Vei2(250, 100), gfx);
+//	SpriteCodex::DrawTile4(Vei2(300, 100), gfx);
+//	SpriteCodex::DrawTile5(Vei2(350, 100), gfx);
+//	SpriteCodex::DrawTile6(Vei2(400, 100), gfx);
+//	SpriteCodex::DrawTile7(Vei2(450, 100), gfx);
+//	SpriteCodex::DrawTile8(Vei2(500, 100), gfx);
+//	SpriteCodex::DrawTileButton(Vei2(100, 150), gfx);
+//	SpriteCodex::DrawTileCross(Vei2(150, 150), gfx);
+//	SpriteCodex::DrawTileFlag(Vei2(200, 150), gfx);
+//	SpriteCodex::DrawTileBomb(Vei2(250, 150), gfx);
+//	SpriteCodex::DrawTileBombRed(Vei2(300, 150), gfx);
+//}
 
 void Game::ComposeFrame()
 {
 	field.Draw(gfx);
+	switch (gameState) {
+	case GameState::Won:
+		SpriteCodex::DrawWinScreen(Vei2(gfx.ScreenWidth / 2 - 100, 350), gfx);
+		break;
+	case GameState::Lost:
+		SpriteCodex::DrawLoseScreen(Vei2(gfx.ScreenWidth / 2 - 100, 350), gfx);
+	}
+	
 }
