@@ -47,12 +47,15 @@ private:
 	Vei2 ScreenToGrid(const Vei2 screenPos);
 	
 private:
-	static constexpr int width = 12;
-	static constexpr int height = 8;
+	static constexpr int width = 4;
+	static constexpr int height = 3;
 	Tile field[width * height];
-	//static constexpr int topLeftX = (Graphics::ScreenWidth - (width * SpriteCodex::tileSize)) / 2;
-	//static constexpr int topLeftY = (Graphics::ScreenHeight - (height * SpriteCodex::tileSize)) / 2;
+	static constexpr int borderWidth = 8;
+	static constexpr Color borderColor = Colors::Blue;
+
 	const Vei2 topLeft = Vei2 { (Graphics::ScreenWidth - (width * SpriteCodex::tileSize)) / 2 ,  (Graphics::ScreenHeight - (height * SpriteCodex::tileSize)) / 2 };
+	//chili initialized topLeft in the ctor, using a 'center' value that he passed in from game.cpp 
+	//(He created GetRect() in Graphics, which returns a RectI for whole screen.  and then called GetRect().GetCenter()
 	bool isKvorked = false;
 	bool isMuyMacho = false;
 	};

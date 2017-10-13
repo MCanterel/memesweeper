@@ -38,6 +38,7 @@ MemeField::MemeField(int nMemes)
 
 void MemeField::Draw(Graphics & gfx) const
 {
+	gfx.DrawRect(GetRect().GetExpanded(borderWidth), borderColor);
 	gfx.DrawRect(GetRect(), SpriteCodex::baseColor);
 	for (Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++) {
 		//for ( ; gridPos.x < width; gridPos.x++) {  //note we don't have to start w initial val here, as gridPos.x will always be given in outer loop

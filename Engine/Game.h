@@ -1,5 +1,5 @@
-/****************************************************************************************** 
- *	Chili DirectX Framework Version 16.07.20											  *	
+/******************************************************************************************
+ *	Chili DirectX Framework Version 16.07.20											  *
  *	Game.h																				  *
  *	Copyright 2016 PlanetChili.net <http://www.planetchili.net>							  *
  *																						  *
@@ -36,17 +36,17 @@ public:
 		Lost
 	};
 public:
-	Game( class MainWindow& wnd );
-	Game( const Game& ) = delete;
+	Game ( class MainWindow& wnd );
+	Game ( const Game& ) = delete;
 	Game& operator=( const Game& ) = delete;
-	void Go();
+	void Go ( );
 private:
-	void ComposeFrame();
-	void UpdateModel();
+	void ComposeFrame ( );
+	void UpdateModel ( );
 	/********************************/
 	/*  User Functions              */
 	/********************************/
-	//void TestTiles();
+
 private:
 	MainWindow& wnd;
 	Graphics gfx;
@@ -56,7 +56,7 @@ private:
 	/********************************/
 	MemeField field;
 	GameState gameState = GameState::Waiting;
-	static constexpr int nMemes = 13;
+	static constexpr int nMemes = 2;
 	Sound soundPad;
 	Sound soundFart;
 };
