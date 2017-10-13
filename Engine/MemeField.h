@@ -23,6 +23,7 @@ private:
 		void ToggleFlag();
 		bool IsFlagged() const;
 		void SetNeighborMemeCount(int memeCount);
+		bool HasNoNeighborMemes ( ) const;
 	private:
 		State state = State::Hidden;
 		bool hasMeme = false;
@@ -40,6 +41,7 @@ public:
 	const Vei2 GetTopLeft() const;
 	int GetCountTotalTiles();
 	bool AllTilesAreRevealed();
+	void RevealTile ( const Vei2& gridPos );
 	
 private:
 	Tile& TileAt(const Vei2& gridPos);
@@ -47,8 +49,8 @@ private:
 	Vei2 ScreenToGrid(const Vei2 screenPos);
 	
 private:
-	static constexpr int width = 4;
-	static constexpr int height = 3;
+	static constexpr int width = 20;
+	static constexpr int height = 15;
 	Tile field[width * height];
 	static constexpr int borderWidth = 8;
 	static constexpr Color borderColor = Colors::Blue;
