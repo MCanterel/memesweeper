@@ -23,60 +23,61 @@
 #include  "SpriteCodex.h"
 
 
-Game::Game(MainWindow& wnd)
+Game::Game ( MainWindow& wnd )
 	:
-	wnd(wnd),
-	gfx(wnd),
-	field(nMemes),
-	soundPad(L"Sounds\\pad.wav"),
-	soundFart(L"Sounds\\fart.wav")
+	wnd ( wnd ),
+	gfx ( wnd ),
+	field ( nMemes ),
+	soundPad ( L"Sounds\\pad.wav" ),
+	soundFart ( L"Sounds\\fart.wav" ),
+	soundYouLose ( L"Sounds\\you_lose.wav" )
 {
 }
 
-void Game::Go()
+void Game::Go ( )
 {
-	gfx.BeginFrame();
-	UpdateModel();
-	ComposeFrame();
-	gfx.EndFrame();
+	gfx.BeginFrame ( );
+	UpdateModel ( );
+	ComposeFrame ( );
+	gfx.EndFrame ( );
 }
-void Game::UpdateModel()
+void Game::UpdateModel ( )
 {
 
-	switch (gameState) {
+	switch ( gameState ) {
 	case GameState::Waiting:
-		SpriteCodex::DrawWaitScreen(Vei2(gfx.ScreenWidth / 2 - 100, 10), gfx);
+		SpriteCodex::DrawWaitScreen ( Vei2 ( gfx.ScreenWidth / 2 - 100, 10 ), gfx );
 		//SpriteCodex::DrawWaitScreen(Vei2(gfx.ScreenWidth / 2, gfx.ScreenHeight / 2), gfx);
-		if (wnd.kbd.KeyIsPressed(VK_RETURN)) gameState = GameState::Playing;
+		if ( wnd.kbd.KeyIsPressed ( VK_RETURN ) ) gameState = GameState::Playing;
 		break;
 	case GameState::Playing:
-		while (!wnd.mouse.IsEmpty()) {
-			const Mouse::Event e = wnd.mouse.Read();
-			Vei2 mousePos = wnd.mouse.GetPos();
+		while ( !wnd.mouse.IsEmpty ( ) ) {
+			const Mouse::Event e = wnd.mouse.Read ( );
+			Vei2 mousePos = wnd.mouse.GetPos ( );
 			// -field.GetTopLeft();  //not necessary, as this is handled in memefield::screentogrid
 			//GetPos() is just passed the raw mousePos
 
-			if (e.GetType() == Mouse::Event::Type::LPress)
+			if ( e.GetType ( ) == Mouse::Event::Type::LPress )
 			{
-				
-				if (field.GetRect().Contains(mousePos))	
-					if (field.OnRevealClick(mousePos)) {
-						soundFart.Play(0.75f, 0.75f);
+
+				if ( field.GetRect ( ).Contains ( mousePos ) )
+					if ( field.OnRevealClick ( mousePos ) ) {
+						soundYouLose.Play ( 1.0f, 0.75f );
 						gameState = GameState::Lost;
 					}
 					else {
-						soundPad.Play(0.75f, 0.2f);
+						soundPad.Play ( 0.75f, 0.2f );
 					}
 			}
-			if (e.GetType() == Mouse::Event::Type::RPress)
+			if ( e.GetType ( ) == Mouse::Event::Type::RPress )
 			{
-				soundPad.Play(0.5f, 0.1f);
-				if (field.GetRect().Contains(mousePos))	
-					field.OnFlagClick(mousePos);
+				soundPad.Play ( 0.5f, 0.1f );
+				if ( field.GetRect ( ).Contains ( mousePos ) )
+					field.OnFlagClick ( mousePos );
 			}
 		}
 
-		if (field.AllTilesAreRevealed()) 
+		if ( field.AllTilesAreRevealed ( ) )
 			gameState = GameState::Won;
 		break;
 	}
@@ -84,15 +85,15 @@ void Game::UpdateModel()
 }
 
 
-void Game::ComposeFrame()
+void Game::ComposeFrame ( )
 {
-	field.Draw(gfx);
-	switch (gameState) {
+	field.Draw ( gfx );
+	switch ( gameState ) {
 	case GameState::Won:
-		SpriteCodex::DrawWinScreen(Vei2(gfx.ScreenWidth / 2 - 100, 375), gfx);
+		SpriteCodex::DrawWinScreen ( Vei2 ( gfx.ScreenWidth / 2 - 100, 375 ), gfx );
 		break;
 	case GameState::Lost:
-		SpriteCodex::DrawLoseScreen(Vei2(gfx.ScreenWidth / 2 - 140, 375), gfx);
+		SpriteCodex::DrawLoseScreen ( Vei2 ( gfx.ScreenWidth / 2 - 140, 375 ), gfx );
 	}
-	
+
 }

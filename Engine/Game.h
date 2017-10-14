@@ -59,4 +59,5 @@ private:
 	static constexpr int nMemes = 25;
 	Sound soundPad;
 	Sound soundFart;
+	Sound soundYouLose;
 };

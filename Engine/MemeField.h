@@ -49,8 +49,8 @@ private:
 	Vei2 ScreenToGrid(const Vei2 screenPos);
 	
 private:
-	static constexpr int width = 20;
-	static constexpr int height = 15;
+	static constexpr int width = 15;
+	static constexpr int height = 10;
 	Tile field[width * height];
 	static constexpr int borderWidth = 8;
 	static constexpr Color borderColor = Colors::Blue;
